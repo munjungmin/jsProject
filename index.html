@@ -1,0 +1,233 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8" />
+    <title>Making your first Phaser 3 Game - Part 1</title>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+    var config = {
+        type: Phaser.AUTO,
+        width: 800,
+        height: 600,
+        physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: { y: 300 },
+                debug: false
+            }
+        },
+        scene: {
+            preload: preload,
+            create: create,
+            update: update
+        }
+    };
+
+    let game = new Phaser.Game(config);
+
+    function preload ()
+    {
+        this.load.image('sky', 'assets/sky.png');
+        this.load.image('ground', 'assets/platform.png');
+        this.load.image('star', 'assets/star.png');
+        this.load.image('bomb', 'assets/bomb.png');
+        this.load.spritesheet('dude', 
+            'assets/dude.png',
+            { frameWidth: 32, frameHeight: 48 }
+        );
+    }
+
+    let player;
+    let platforms;
+    let cursors;
+    let stars;
+    let score = 0;
+    let scoreText;
+    let bombs; 
+
+    function create ()
+    {
+        this.add.image(0, 0, 'sky').setOrigin(0, 0);
+        this.add.image(100, 100, 'bomb');
+        //this.add.image(300, 300, 'dude', 0);
+
+        //플랫폼 추가
+        platforms = this.physics.add.staticGroup();
+        platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+        platforms.create(600, 400, 'ground');
+        platforms.create(50, 250, 'ground');
+        platforms.create(750, 220, 'ground');
+
+
+        //player 추가
+        player = this.physics.add.sprite(100, 450, 'dude');
+        player.setBounce(0.2);
+        player.setCollideWorldBounds(true);
+        player.body.setGravityY(300);
+
+        // 충돌 검사
+        this.physics.add.collider(player, platforms);
+
+        // 키보드 매니저 
+        cursors = this.input.keyboard.createCursorKeys();
+
+
+        //this는 Scene (gpt가 그럼)
+        this.anims.create({
+            key: 'left',
+            frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'turn',
+            frames: [ { key: 'dude', frame: 4 } ],
+            frameRate: 20
+        });
+
+        this.anims.create({
+            key: 'right',
+            frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        
+        stars = this.physics.add.group({
+            key: 'star',
+            repeat: 11,
+            setXY: {x: 12, y: 0, stepX: 70}
+        });
+
+        stars.children.iterate(function (child){
+            child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+        });
+
+        this.physics.add.collider(stars, platforms);
+        this.physics.add.overlap(player, stars, collectStar, null, this);
+
+
+        scoreText = this.add.text(16, 16, 'score: 0', {fontSize: '32px', fill: '#000'});
+
+        bombs = this.physics.add.group();
+
+        this.physics.add.collider(bombs, platforms);
+        this.physics.add.collider(player, bombs, hitBomb, null, this);
+    }
+
+    function collectStar(player, star){
+        star.disableBody(true, true);
+        score += 10;
+        scoreText.setText('Score: ' + score);
+
+        if(stars.countActive(true) === 0){
+            stars.children.iterate(function (child){
+                child.enableBody(true, child.x, 0, true, true);
+            });
+
+            let x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+            let bomb = bombs.create(x, 16, 'bomb');
+            bomb.setBounce(1);
+            bomb.setCollideWorldBounds(true);
+            bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+        }
+
+    }
+
+    function hitBomb(player, bomb){
+        this.physics.pause();
+        player.setTint(0xff0000);
+        player.anims.play('turn');
+        gameOver = true;
+    }
+
+
+    function update (){
+        if(cursors.left.isDown){
+            player.setVelocityX(-160);
+            player.anims.play('left', true);
+        } else if(cursors.right.isDown){
+            player.setVelocityX(160);
+            player.anims.play('right', true);
+        }
+        else {
+            player.setVelocityX(0);
+            player.anims.play('turn');
+        }
+
+        if(cursors.up.isDown && player.body.touching.down){
+            player.setVelocityY(-550);
+        }
+    }
+
+</script>
+
+</body>
+</html>
+
+
+<!--
+config : how i configure my phaser game, 매우 많은 옵션이 있다.
+type: Phaser.AUTO, WEBGL, CANVAS ... 렌더링 방식? 디폴트가 webgl, 지원을 안하면 canvas
+페이저가 만든 canvas 요소가 script를 불러온 지점에서 doc에 부착될 것이다. (물론 부모 지정도 가능)
+
+width/height: canvas 요소의 size 지정 (해상도)
+scene: 나중에 자세히 설명
+
+preload(a, b) : Scene 메서드, phaser가 시작할때 자동으로 실행하고, 정의된 것들을 로드함
+    파라미터 a: 로드된 에셋에 대한 링크 
+
+create(): 
+    로드한 이미지를 보려면 create 함수에서 this.add.image(x, y, 'sky'); 
+    x, y: 이미지의 중심이 위치하는 좌표, 0,0이면 이미지의 중심이 0,0에 맞춰진다.
+    setOrigin()으로 중심 설정 가능 
+    *phaser에서는 이미지 배치할 때 위치 좌표가 이미지의 왼쪽 위가 아니라 이미지 중심 기준이다.
+
+
+이미지를 add하면 현재 씬의 display list에 추가되며, 어디서나 사용가능하다. 
+씬은 그 자체로 모든 방향으로 무한한 크기이며, 보여지는 지역을 벗어나도 보이지만 않을뿐 이미지는 존재
+
+
+Texture: 로드된 이미지 리소스 하나를 말함. 
+this.load.image('sky', 'assets/sky.png'); 는 이미지 전체를 "sky"라는 이름의 Texture로 저장
+
+spritesheet: 이미지배열인데, 여러 조각의 이미지가 합쳐저 있는 것을 말함. 
+그래서 frameWidth, frameHeight로 합쳐진 이미지를 분할해 사용 
+
+
+static physics group :  정적 물리 그룹 
+arcade 물리에는 정적 물리와 동적 물리가 있다. 
+정적 물리는 위치와 크기만 가지며 중력x, 속도 설정 x, 무언가 충돌하더라도 움직이지 않는다.
+동적 물리는 속도,가속도 같은 힘을 통해 움직일 수 있고 그로 인해 튕기거나 충돌할 수 있고 영향을 줄 수 있음 
+플랫폼 같은걸 동적 물리로 만들면, 플레이어와 충돌할 경우 속도가 바뀌며 플랫폼이 움직이게 되어 정적 body로 만든 것이다.
+근데 충돌 처리를 해야 플랫폼 지면에 닿을때 플레이어가 떨어지는 걸 멈출 수 있다... -> Collider object 
+
+
+그룹: 유사한 오브젝트를 그룹화하여 하나의 단위로 제어, 그룹과 다른 게임 오브젝트 간 충돌 확인도 가능 
+
+
+애니메이션 관리자는 전역 시스템- 애니메이션관리자 내에서 생성된 애니메이션은 전역적으로 사용 가능 
+
+Collider object : 두 물리적 오브젝트를 감시하고, 충돌 체크 or overlap 체크, 충돌이 일어나면 우리가 정의한 callback함수를 호출해줌
+*충돌: 충돌반응까지 생김, overlap: 위치만 겹쳤는지 체크 
+
+키보드 처리: phaser에 내장 Keyboard manager가 있기 때문에 event listener를 추가할 필요가 없다. 
+cursors에 left, right, up, down 4가지 속성을 가짐(Key Object), update에서 호출
+
+
+star.disableBody(true, true);
+1번 true: 물리엔진에서 body 비활성화 ,즉 물리 연산에서 제외
+2번 true: 화면에서 gameObject를 숨김 
+
+-->
+
