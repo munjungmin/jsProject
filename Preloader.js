@@ -8,7 +8,7 @@ export class Preloader extends Phaser.Scene{
         // 사용할 이미지, 오디오 로드(리소스는 전역으로 관리됨)
         this.load.image('gamestart', 'assets/gamestart.png');
         this.load.image('dude', 'assets/dude.png');
-        
+        this.load.image('grass', 'assets/grass.png');
     }
 
     create(){
@@ -22,5 +22,4 @@ export class Preloader extends Phaser.Scene{
             this.scene.start('MainGame');
         });
     }
-
 } 
