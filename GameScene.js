@@ -1,15 +1,15 @@
+import { Player } from "./Player.js";
 import { Reaper } from "./Reaper.js";
 import { HpBar } from "./HpBar.js";
+import { ExpBar } from "./ExpBar.js";
 
 export class GameScene extends Phaser.Scene{
 
     constructor(){
         super('MainGame');
         this.player = null;
-        this.reaperArr = [];
         this.cursors = null;
         this.background = null;
-        //this.st = null; //생성 인터벌
     }            
 
     preload(){
@@ -24,11 +24,9 @@ export class GameScene extends Phaser.Scene{
             'assets/reapermove.png',
             { frameWidth: 48, frameHeight: 48 }
         );
-        
     }
 
     createReaper(){
-        //랜덤 x, y
         const distance = 400;
         const direction = Phaser.Math.Between(0, 3); // l r t b
         let x = parseInt(this.player.x);
@@ -66,11 +64,13 @@ export class GameScene extends Phaser.Scene{
         this.background.setTileScale(800/1024, 600/1024);  
         
         //player 추가
-        this.player = this.physics.add.sprite(300, 300, 'dude');
+        this.player = new Player(this, 400, 300, 'dude');
 
         //hpbar 추가
         this.hpbar = new HpBar(this, 600, 500, 60, 7, 0xff0000);
         
+        //Expbar 추가
+        this.expbar = new ExpBar(this, 400, 10, 800, 20, 0xff0000);
 
         //
         this.reapers = this.physics.add.group();
@@ -176,7 +176,8 @@ export class GameScene extends Phaser.Scene{
         this.background.tilePositionY = this.cameras.main.scrollY;     
         
         // hpbar 플레이어 따라 이동
-        this.hpbar.setPosition(this.player.x, this.player.y + 35);
+        
+        this.hpbar.setPosition(Math.round(this.player.x), Math.round(this.player.y + 35));
         //reaper 플레이어를 따라 이동        
         for(let i = 0; i < this.reapers.children.entries.length; i++){
 
