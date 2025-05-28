@@ -8,9 +8,8 @@ import { Bullet } from "./Bullet.js";
 export class GameScene extends Phaser.Scene{
 
     constructor(){
-        super('MainGame');
+        super('GameScene');
         this.player = null;
-        this.cursors = null;
         this.background = null;
         this.bullets = null;
         this.enemies = null;
@@ -117,9 +116,14 @@ export class GameScene extends Phaser.Scene{
         });
 
 
-        //키보드 매니저
-        this.cursors = this.input.keyboard.createCursorKeys();
-
+        this.input.keyboard.on('keydown-ESC', () => {
+            console.log(this.scene.isPaused());
+            if(this.scene.isPaused()){
+                this.scene.wake();
+            } else {
+                this.scene.pause();
+            }
+        })
         this.createAnimations();
 
         // 카메라 설정

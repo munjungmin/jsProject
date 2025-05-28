@@ -1,5 +1,6 @@
 import { Bar } from './Bar.js'; 
 import { Bullet } from './Bullet.js';
+import { GameOver } from './GameOver.js';
 
 export class Player extends  Phaser.Physics.Arcade.Sprite{
     
@@ -9,7 +10,7 @@ export class Player extends  Phaser.Physics.Arcade.Sprite{
         scene.add.existing(this);  // 화면에 렌더링 
         scene.physics.add.existing(this);  //물리 엔진에 등록
 
-        this.hp = 100;
+        this.hp = 10;
         this.hpbar = new Bar(scene, this.x, this.y+40, 60, 8, 58, 7, 0x000000, 0x9B111E);  // scene, x, y, outBox width/height
         this.tintTimer = null;
 
@@ -58,8 +59,11 @@ export class Player extends  Phaser.Physics.Arcade.Sprite{
 
     onHitEnemy(enemy){
         this.hp -= enemy.damage;
-
         this.hpbar.setProgress(this.hp / 100);
+
+        if(this.hp <= 0){
+            this.die();    
+        }
 
         // 1초동안 빨간색으로 표시되고, 그 이후엔 다시 원래 색으로 돌아오기
         // 근데 그 사이에 다른 몬스터에게 또 맞았다면 2번째 타이머가 또 작동하고 
@@ -77,6 +81,9 @@ export class Player extends  Phaser.Physics.Arcade.Sprite{
             },
             callbackScope: this
         });
+
+        
+
     }
 
     //기본공격
@@ -85,6 +92,26 @@ export class Player extends  Phaser.Physics.Arcade.Sprite{
         this.scene.bullets.add(bullet);
 
         bullet.move();
+    }
+
+    die(){
+      //게임오버 씬으로 전환 
+       
+        let scene = this.scene;
+
+            //  Get a random color
+            const red = Phaser.Math.Between(50, 255);
+            const green = Phaser.Math.Between(50, 255);
+            const blue = Phaser.Math.Between(50, 255);
+            this.scene.cameras.main.fade(2000, red, green, blue);
+
+
+            this.scene.cameras.main.on(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+                console.log(this.scene);
+                scene.scene.start('GameOver');
+            });
+
+
     }
 
 }
