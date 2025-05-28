@@ -45,6 +45,11 @@
             'assets/dude.png',
             { frameWidth: 32, frameHeight: 48 }
         );
+        this.load.spritesheet(
+            'flyingeye_flight',
+            'assets/monster/flyingeye/flight.png',
+            { frameWidth: 150, frameHeight: 150 }
+        );
     }
 
     let player;
@@ -54,12 +59,18 @@
     let score = 0;
     let scoreText;
     let bombs; 
-
+    
+    let flyingeye;
     function create ()
     {
+
+
+
+
         this.add.image(0, 0, 'sky').setOrigin(0, 0);
-        this.add.image(100, 100, 'bomb');
+        //this.add.image(100, 100, 'bomb');
         //this.add.image(300, 300, 'dude', 0);
+        
 
         //플랫폼 추가
         platforms = this.physics.add.staticGroup();
@@ -69,11 +80,21 @@
         platforms.create(750, 220, 'ground');
 
 
+        flyingeye = this.add.sprite(200, 450, 'flyingeye_flight');
         //player 추가
         player = this.physics.add.sprite(100, 450, 'dude');
         player.setBounce(0.2);
         player.setCollideWorldBounds(true);
         player.body.setGravityY(300);
+
+        this.time.addEvent({
+            delay: 2000,
+            callback: function(){
+                player.setActive(false);
+                player.setVisible(false);
+            },
+            callbackScope: this
+        });
 
         // 충돌 검사
         this.physics.add.collider(player, platforms);
@@ -100,6 +121,14 @@
             key: 'right',
             frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
             frameRate: 10,
+            repeat: -1
+        });
+
+
+        // flyingeye 애니메이션
+        this.anims.create({
+            key: 'flyingeye_flight',
+            frames: this.anims.generateFrameNumbers('flyingeye_flight', { start: 0, end: 7 }),
             repeat: -1
         });
 
@@ -169,6 +198,8 @@
         if(cursors.up.isDown && player.body.touching.down){
             player.setVelocityY(-550);
         }
+
+        flyingeye.anims.play('flyingeye_flight', true);
     }
 
 </script>

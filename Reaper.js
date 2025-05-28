@@ -1,14 +1,24 @@
-export class Reaper extends Phaser.Physics.Arcade.Sprite {
+import { Enemy } from "./Enemy.js";
+
+export class Reaper extends Enemy {
     constructor(scene, x, y, textureKey){
         super(scene, x, y, textureKey);
 
-        scene.add.existing(this);  // 화면에 렌더링 
-        scene.physics.add.existing(this);  //물리 엔진에 등록
-
+        this.damage = 10;
+        this.lastHitTime = scene.time.now;
+        console.log(this.lastHitTime);
     }
 
 
-    update(){
-
+    isHitable(){
+        let cur_time = this.scene.time.now;
+        if(cur_time - this.lastHitTime >= 2000){   //한번 접촉 후 2초가 지난 후에 공격 가능 
+            this.lastHitTime = cur_time;
+            return true;
+        }
+        else {
+            return false;
+        }
     }
+    
 }
