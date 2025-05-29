@@ -5,7 +5,6 @@ import { Bullet } from "../Bullet.js";
 import { ExpItem } from "../ExpItem.js";
 import { Goblin } from "../Unit/Goblin.js";
 import { Skeleton } from "../Unit/Skeleton.js";
-import { ExpBar } from "../ExpBar.js";
 
 const ATTACK_COOLTIME = 2000;
 const ATTACK_COOLTIME_DECREMENT = 800;
@@ -39,7 +38,17 @@ export class GameScene extends Phaser.Scene{
     }
     
     create(){
-        //this.testBar = new ExpBar(this);
+        this.fpsText = this.add.text(10, 500, '', { font: '16px Courier', fill: '#ffffff' });
+        this.fpsText.setDepth(20);
+        this.fpsText.setScrollFactor(0);
+        this.time.addEvent({
+            delay: 500,
+            loop: true,
+            callback: () => {
+                this.fpsText.setText('FPS: ' + Math.floor(this.game.loop.actualFps));
+            }
+        });
+
         this.init();
         this.createGameObject();
         this.setupCollisions();

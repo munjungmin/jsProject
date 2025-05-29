@@ -1,7 +1,7 @@
 import { Enemy } from "./Enemy.js";
 
 const GOBLIN_HP = 20;
-const GOBLIN_DAMAGE = 3;
+const GOBLIN_DAMAGE = 20;
 const HITBOX_WIDTH = 32;
 const HITBOX_HEIGHT = 32;
 const HITBOX_X_OFFSET = 59;

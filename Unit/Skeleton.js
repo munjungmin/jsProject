@@ -1,7 +1,7 @@
 import { Enemy } from "./Enemy.js";
 
 const SKELETON_HP = 30;
-const SKELETON_DAMAGE = 1;
+const SKELETON_DAMAGE = 30;
 const HITBOX_WIDTH = 32;
 const HITBOX_HEIGHT = 50;
 const HITBOX_X_OFFSET = 59;
