@@ -1,4 +1,4 @@
-import { Bar } from '../Bar.js'; 
+import { HpBar } from '../HpBar.js'; 
 import { Bullet } from '../Bullet.js';
 import { ExpBar} from '../ExpBar.js';
 
@@ -6,7 +6,7 @@ const TOTAL_HP = 100;
 const INITIAL_REQUIRED_EXP = 20;
 const EXP_INCREMENT = 20;
 const VELOCITY = 250;
-const TINT_DURATION = 1500;   // 빨갛게 타격 표시 되는 지속시간
+const TINT_DURATION = 1000;   // 빨갛게 타격 표시 되는 지속시간
 
 export class Player extends  Phaser.Physics.Arcade.Sprite{
     
@@ -18,14 +18,12 @@ export class Player extends  Phaser.Physics.Arcade.Sprite{
         
         this.totalHp = TOTAL_HP;
         this.hp = this.totalHp;
-        this.hpbar = new Bar(scene, this.x, this.y+40, 60, 8, 60, 7, 0x000000, 0x9B111E);  // scene, x, y, outBox width/height
+        this.hpbar = new HpBar(scene, this.x, this.y+40, 60, 8, 60, 7, 0x000000, 0x9B111E);  
 
         this.currentExp = 0;
         this.requiredExp = INITIAL_REQUIRED_EXP;
-        //this.expbar = new Bar(scene, 400, 12, 800, 25, 0, 20, 0xffffff, 0xff8BCF);  // scene, x, y, outBox w/h inBox w/h, out color, in color
         this.expbar = new ExpBar(scene);
         
-    
         this.tintTimer = null;
         this.cursors = scene.input.keyboard.createCursorKeys();
     }
@@ -80,14 +78,10 @@ export class Player extends  Phaser.Physics.Arcade.Sprite{
         });
     }
 
-    //기본공격
     fire(){
         let bullet = new Bullet(this.scene, this.x, this.y, 'bullet');
         this.scene.bullets.add(bullet);
-
-        bullet.move();
     }
-
     
     collectExpItem(expValue){
         this.currentExp += expValue;
@@ -100,7 +94,7 @@ export class Player extends  Phaser.Physics.Arcade.Sprite{
     
     levelInit(){
         this.currentExp = 0;
-        this.expbar.setProgress(0);
+        this.expbar.draw(0);
         this.requiredExp += EXP_INCREMENT;
     }
 

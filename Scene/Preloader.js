@@ -15,11 +15,6 @@ export class Preloader extends Phaser.Scene{
             { frameWidth: 32, frameHeight: 48 }
         );
         this.load.spritesheet(
-            'reaper', 
-            '../assets/monster/reaper/reapermove.png',
-            { frameWidth: 48, frameHeight: 48 }
-        );
-        this.load.spritesheet(
             'flyingeye_flight',
             '../assets/monster/flyingeye/flight.png',
             { frameWidth: 150, frameHeight: 150 }
@@ -29,13 +24,11 @@ export class Preloader extends Phaser.Scene{
             '../assets/monster/flyingeye/takehit.png',
             { frameWidth: 150, frameHeight: 150 }
         );
-
         this.load.spritesheet(
             'flyingeye_death',
             '../assets/monster/flyingeye/death.png',
             { frameWidth: 150, frameHeight: 150 }
         );
-
         this.load.spritesheet(
             'goblin_run',
             '../assets/monster/goblin/run.png',
@@ -65,6 +58,16 @@ export class Preloader extends Phaser.Scene{
             'skeleton_death',
             '../assets/monster/skeleton/death.png',
             { frameWidth: 150, frameHeight: 150 }
+        );
+        this.load.spritesheet(
+            'bullet_explosion', 
+            '../assets/bullet_explosion.png',
+            { frameWidth: 100, frameHeight: 100 }
+        );
+        this.load.spritesheet(
+            'bullet_disappear', 
+            '../assets/bullet_disappear.png',
+            { frameWidth: 48, frameHeight: 48 }
         );
 
         this.load.script('webfont', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js');

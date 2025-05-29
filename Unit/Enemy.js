@@ -1,4 +1,3 @@
-
 const HIT_COOLTIME = 1500;
 const DEFAULT_HP = 10;
 const DEFAULT_DAMAGE = 8;
@@ -20,7 +19,6 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.scene.physics.add.existing(this);  //물리 엔진에 등록
     }
     
-    // 게임 진행 관련 
     move(){
         this.scene.physics.moveToObject(this, this.scene.player, 30);
     }
@@ -63,25 +61,19 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.playDeathAnim();       
     }
 
-    // 애니메이션 관련
     playTakeHitAnim(){
         this.anims.play(this.animKeys.takehit, true);
-          
         this.once(Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + this.animKeys.takehit, () => {
             this.anims.play(this.animKeys.walk, true); 
         });
-
     }
-
     playDeathAnim(){
         this.anims.play(this.animKeys.death, true);
-          
         this.once(Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + this.animKeys.death, () => {
             this.disableBody(true, true);
         });
     }
 
-    
     static spawnPosition(playerX, playerY){
         const distance = 400;
         const direction = Phaser.Math.Between(0, 3); // l r t b
@@ -108,5 +100,4 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         }
         return {x, y};
     }
- 
 }

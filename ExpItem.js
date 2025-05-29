@@ -1,4 +1,4 @@
-export class Exp extends Phaser.Physics.Arcade.Sprite {
+export class ExpItem extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, textureKey){
         super(scene, x, y, textureKey);
 

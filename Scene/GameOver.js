@@ -26,7 +26,6 @@ export class GameOver extends Phaser.Scene{
                 }).setShadow(2, 2, '#333333', 2, false, true)
                 .setOrigin(0.5, 0.5);
 
-
                 this.text = this.add.text(400, 500, 'Click here to restart', { 
                     fontFamily: 'New Rocker' , 
                     fontSize: 25, color: '#ffffff'

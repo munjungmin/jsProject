@@ -5,7 +5,6 @@ export class AnimationScene extends Phaser.Scene{
     }
 
     create(){
-        // Player Animations
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
@@ -26,7 +25,6 @@ export class AnimationScene extends Phaser.Scene{
             repeat: -1
         });
 
-        // flyingeye Animations
         this.anims.create({
             key: 'flyingeye_flight',
             frames: this.anims.generateFrameNumbers('flyingeye_flight', { start: 0, end: 7 }),
@@ -36,7 +34,6 @@ export class AnimationScene extends Phaser.Scene{
         this.anims.create({
             key: 'flyingeye_takehit',
             frames: this.anims.generateFrameNumbers('flyingeye_takehit', { start: 0, end: 3 }),
-            repeat: 0
         });
 
         this.anims.create({
@@ -44,7 +41,6 @@ export class AnimationScene extends Phaser.Scene{
             frames: this.anims.generateFrameNumbers('flyingeye_death', { start: 0, end: 3 }),
         });
 
-        // goblin Animations
         this.anims.create({
             key: 'goblin_run',
             frames: this.anims.generateFrameNumbers('goblin_run', { start: 0, end: 7 }),
@@ -62,7 +58,6 @@ export class AnimationScene extends Phaser.Scene{
             frames: this.anims.generateFrameNumbers('goblin_death', { start: 0, end: 3 }),
         });
 
-        // skeleton Animations
         this.anims.create({
             key: 'skeleton_walk',
             frames: this.anims.generateFrameNumbers('skeleton_walk', { start: 0, end: 3 }),
@@ -80,7 +75,14 @@ export class AnimationScene extends Phaser.Scene{
             frames: this.anims.generateFrameNumbers('skeleton_death', { start: 0, end: 3 }),
         });
 
-
+        this.anims.create({
+            key: 'bullet_explosion',
+            frames: this.anims.generateFrameNumbers('bullet_explosion', { start: 12, end: 18 }),
+        });
+        this.anims.create({
+            key: 'bullet_disappear',
+            frames: this.anims.generateFrameNumbers('bullet_disappear', { start: 0, end: 7 }),
+        });
 
         this.scene.start('MenuScene');
     }

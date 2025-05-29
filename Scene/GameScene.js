@@ -2,12 +2,13 @@ import { Player } from "../Unit/Player.js";
 import { Enemy } from "../Unit/Enemy.js";
 import { FlyingEye } from "../Unit/FlyingEye.js";
 import { Bullet } from "../Bullet.js";
-import { Exp } from "../Exp.js";
+import { ExpItem } from "../ExpItem.js";
 import { Goblin } from "../Unit/Goblin.js";
 import { Skeleton } from "../Unit/Skeleton.js";
 import { ExpBar } from "../ExpBar.js";
 
-const ATTACK_COOLTIME = 1000;
+const ATTACK_COOLTIME = 2000;
+const ATTACK_COOLTIME_DECREMENT = 800;
 const LV1_ENEMY_COOLTIME = 100;
 const LV2_ENEMY_COOLTIME = 200;
 const LV3_ENEMY_COOLTIME = 250;
@@ -28,10 +29,12 @@ export class GameScene extends Phaser.Scene{
     init(){
         this.count = 0;
         this.level = 0;
+        this.attack_cooltime = ATTACK_COOLTIME;
         this.player = null;
         this.background = null;
         this.bullets = null;
         this.enemies = null;
+        this.attackTimer = null;
         this.killedEnemyCount = 0;
     }
     
@@ -58,15 +61,15 @@ export class GameScene extends Phaser.Scene{
          //월드 상에서는 배경이 고정된 위치가 맞는데, 화면 상에서 고정돼있냐 아니냐 여부(0이면 카메라 영향을 안받아서 고정된 위치, 1이면 카메라 영향을 받아서 카메라가 움직이는 경우 화면에서 위치가 변해 보인다.)
     }
     createLevelText(){
-        this.levelText = this.add.text(800, 5, 'Lv ' + (this.level+1),{fontStyle: 'bold', fontSize: 20, color: '#000000'});
+        this.levelText = this.add.text(790, 3, 'Lv ' + (this.level+1),{fontStyle: 'bold', fontSize: 20, color: '#ffffff'});
         this.levelText.setOrigin(1, 0);
-        this.levelText.setDepth(20);
+        this.levelText.setDepth(30);
         this.levelText.setScrollFactor(0);
     }
     createPhysicsGroup(){
         this.enemies = this.physics.add.group({ classType: Enemy });
         this.bullets = this.physics.add.group({ classType: Bullet });
-        this.exps = this.physics.add.group({ classType: Exp });
+        this.exps = this.physics.add.group({ classType: ExpItem });
         this.physics.add.collider(this.enemies, this.enemies);
     }
 
@@ -91,7 +94,7 @@ export class GameScene extends Phaser.Scene{
         this.enemies.add(enemy);
     }
     createExpItem(x, y){
-        let exp = new Exp(this, x, y, 'star');
+        let exp = new ExpItem(this, x, y, 'star');
         this.exps.add(exp);
     }
 
@@ -136,8 +139,8 @@ export class GameScene extends Phaser.Scene{
     }
     setupAutoAttack(){
         // 기본공격 시간마다 발사
-        this.time.addEvent({
-            delay: ATTACK_COOLTIME,
+        this.attackTimer = this.time.addEvent({
+            delay: this.attack_cooltime,
             callback: function() {
                 if(this.enemies.countActive(true) > 0) {
                     this.player.fire();
@@ -147,6 +150,7 @@ export class GameScene extends Phaser.Scene{
             loop: true
         });
     }
+
     setupPauseKeyEvent(){
         this.input.keyboard.on('keydown-ESC', () => { 
             this.scene.pause(); 
@@ -161,12 +165,16 @@ export class GameScene extends Phaser.Scene{
         this.background.tilePositionX = this.cameras.main.scrollX;  //tilePosition은 내부적으로 modulo 연산처럼 동작해 카메라가 계속 오른쪽으로 움직여도 상관없다.
         this.background.tilePositionY = this.cameras.main.scrollY;     
 
-        // unit 이동
+        // unit, bullet 이동
         this.player.move();
     
         for(let i = 0; i < this.enemies.children.entries.length; i++){
             let enemy = this.enemies.children.entries[i];
             enemy.move();
+        }
+        for(let i = 0; i < this.bullets.children.entries.length; i++){
+            let bullet = this.bullets.children.entries[i];
+            bullet.move();
         }
 
         this.spawnRules.forEach(rule => {
@@ -174,15 +182,17 @@ export class GameScene extends Phaser.Scene{
                 this.createEnemy(rule.type);
             }
         });
-       
     }
 
     levelUp(){
         this.level++;
+        if(this.level < 3){
+            this.attack_cooltime -= ATTACK_COOLTIME_DECREMENT;
+            this.attackTimer.delay = this.attack_cooltime;
+        }
         this.levelText.setText('Lv ' + (this.level+1));
         this.scene.pause();
         this.scene.launch('LevelUpScene');
     }
-
 }
 
