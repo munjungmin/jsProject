@@ -1,13 +1,16 @@
-import { Preloader } from "./Preloader.js";
-import { GameScene } from "./GameScene.js";
-import { GameOver } from "./GameOver.js";
-import PauseScene from "./PauseScene.js";
+import { Preloader } from "./Scene/Preloader.js";
+import { AnimationScene } from "./Scene/AnimationScene.js";
+import MenuScene from "./Scene/MenuScene.js";
+import { GameScene } from "./Scene/GameScene.js";
+import LevelUpScene from "./Scene/LevelUpScene.js";
+import PauseScene from "./Scene/PauseScene.js";
+import { GameOver } from "./Scene/GameOver.js";
 
 const config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
-    backgroundColor: '#AAAAAA',
+    backgroundColor: '#2c0d0d',
     pixelArt: true,
     physics: {
             default: 'arcade',
@@ -16,8 +19,7 @@ const config = {
                 debug: false
             }
         },
-    //scene:[ Preloader, GameScene]
-    scene:[ GameScene,PauseScene, GameOver]
+    scene:[ Preloader, AnimationScene, MenuScene, GameScene, LevelUpScene, PauseScene, GameOver]
 };
 
 let game = new Phaser.Game(config);

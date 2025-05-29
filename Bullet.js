@@ -8,7 +8,6 @@ export class Bullet extends Phaser.Physics.Arcade.Image {
         this.damage = 8;        
     }
 
-    
     move(){
         let enemy = this.scene.physics.closest(this, this.scene.enemies.children.entries);
         this.scene.physics.moveToObject(this, enemy, 50);
