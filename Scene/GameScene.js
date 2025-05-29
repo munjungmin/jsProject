@@ -38,17 +38,6 @@ export class GameScene extends Phaser.Scene{
     }
     
     create(){
-        this.fpsText = this.add.text(10, 500, '', { font: '16px Courier', fill: '#ffffff' });
-        this.fpsText.setDepth(20);
-        this.fpsText.setScrollFactor(0);
-        this.time.addEvent({
-            delay: 500,
-            loop: true,
-            callback: () => {
-                this.fpsText.setText('FPS: ' + Math.floor(this.game.loop.actualFps));
-            }
-        });
-
         this.init();
         this.createGameObject();
         this.setupCollisions();
